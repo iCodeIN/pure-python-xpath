@@ -70,6 +70,9 @@ class NumberLiteral(Expression):
 #
 
 class SelectFromRootNode(Expression):
+    """
+    This class handles the '/' token of an XPATH expression
+    """
 
     def __init__(self):
         super().__init__()
@@ -78,6 +81,9 @@ class SelectFromRootNode(Expression):
         return (node_set_pos, node_set_neg)
 
 class SelectAll(Expression):
+    """
+    This class handles the '//' token of an XPATH expression
+    """
 
     def __init__(self):
         super().__init__()
@@ -90,6 +96,9 @@ class SelectAll(Expression):
         return (o, [])
 
 class SelectStar(SelectAll):
+    """
+    This class handles the '*' token of an XPATH expression
+    """
 
     def __init__(self):
         super().__init__()
@@ -98,6 +107,9 @@ class SelectStar(SelectAll):
         return super().evaluate(node_set_pos, node_set_neg)
 
 class SelectHTMLTag(Expression):
+    """
+    This class handles any HTML-tag token of an XPATH expression
+    """
 
     def __init__(self, tag_name):
         super().__init__()
@@ -107,6 +119,9 @@ class SelectHTMLTag(Expression):
         return ([x for x in node_set_pos if x.name == self.tag_name], [])
 
 class SelectText(Expression):
+    """
+    This class handles the 'text()' token of an XPATH expression
+    """
 
     def __init__(self):
         super().__init__()
@@ -115,7 +130,10 @@ class SelectText(Expression):
         return [x.text for x in node_set_pos]
 
 class SelectAttribute(Expression):
-
+    """
+    This class handles the '@attr' token of an XPATH expression
+    when it is not part of a predicate.
+    """
     def __init__(self, attribute_name):
         super().__init__()
         self.attribute_name =  attribute_name[1:]
