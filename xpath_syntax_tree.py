@@ -363,6 +363,9 @@ class NotEqual(Comparison):
             neg = [x for x in node_set_pos if x not in pos]
             return (pos, neg)
 
+#
+# logic predicates
+#
 
 class LogicalAnd(Predicate):
 
@@ -403,7 +406,7 @@ class LogicalNot(Predicate):
         return (node_set_neg, node_set_pos)
 
 #
-# Predicates related to text
+# text-related predicates
 #
 
 class TextContains(Predicate):
@@ -451,6 +454,7 @@ class TextStartsWith(Predicate):
         return (pos, neg)
 
 class TextEndsWith(Predicate):
+
     def __init__(self):
         super().__init__()
 
