@@ -133,132 +133,236 @@ class Predicate(Expression):
     def __init__(self):
         super().__init__()
 
-class GreaterThan(Predicate):
+class Comparison(Predicate):
+
+    def __init__(self):
+        super().__init__()
+
+    def _check_arguments(self):
+
+        r = self.children[0]
+        l = self.children[1]
+
+        # exceptions
+        if l.__class__.__name__ not in ['AttributeName', 'NumberLiteral', 'StringLiteral']:
+            raise SyntaxError('Invalid arguments for comparison operator in XPATH')
+        if r.__class__.__name__ not in ['AttributeName', 'NumberLiteral', 'StringLiteral']:
+            raise SyntaxError('Invalid arguments for comparison operator in XPATH')
+        if l.__class__.__name__  == 'NumberLiteral' and r.__class__.__name__  == 'StringLiteral':
+            raise SyntaxError('Mismatched operands for comparison in XPATH. Can not compare str and float.')
+        if l.__class__.__name__  == 'StringLiteral' and r.__class__.__name__  == 'NumberLiteral':
+            raise SyntaxError('Mismatched operands for comparison in XPATH. Can not compare str and float.')
+
+
+class GreaterThan(Comparison):
 
     def __init__(self):
         super().__init__()
 
     def evaluate(self, node_set_pos, node_set_neg):
 
-        # nodes where an attribute is equal to a given value
-        atr = None
-        val = None
-        if self.children[0].__class__.__name__ == 'AttributeName' and self.children[1].__class__.__name__ == 'NumberLiteral':
-            atr = self.children[0].value
-            val = self.children[1].value
-        if self.children[1].__class__.__name__ == 'AttributeName' and self.children[0].__class__.__name__ == 'NumberLiteral':
-            atr = self.children[1].value
-            val = self.children[0].value
+        super()._check_arguments()
 
-        pos = [x for x in node_set_pos if (atr in x.attrs and x.attrs[atr] > val)]
-        neg = [x for x in node_set_pos if (atr not in x.attrs or x.attrs[atr] <= val)]
-        return (pos, neg)
+        # literal arguments only
+        r = self.children[0]
+        l = self.children[1]
+        if l.__class__.__name__ != 'AttributeName' and l.__class__.__name__ != 'AttributeName':
+            if l.value > r.value:
+                return (node_set_pos, node_set_neg)
+            else:
+                return ([], node_set_pos)
 
-class GreaterThanOrEqual(Predicate):
+        # both arguments are an attribute name
+        if l.__class__.__name__ == r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and r.value in x.attrs and x.attrs[l.value] > x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
 
-    def __init__(self):
-        super().__init__()
+        # one of the arguments is an attribute name
+        if l.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and x.attrs[l.value] > r.value)]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+        if r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (r.value in x.attrs and l.value > x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
 
-    def evaluate(self, node_set_pos, node_set_neg):
 
-        # nodes where an attribute is equal to a given value
-        atr = None
-        val = None
-        if self.children[0].__class__.__name__ == 'AttributeName' and self.children[1].__class__.__name__ == 'NumberLiteral':
-            atr = self.children[0].value
-            val = self.children[1].value
-        if self.children[1].__class__.__name__ == 'AttributeName' and self.children[0].__class__.__name__ == 'NumberLiteral':
-            atr = self.children[1].value
-            val = self.children[0].value
-
-        pos = [x for x in node_set_pos if (atr in x.attrs and x.attrs[atr] >= val)]
-        neg = [x for x in node_set_pos if (atr not in x.attrs or x.attrs[atr] < val)]
-        return (pos, neg)
-
-class SmallerThan(Predicate):
+class GreaterThanOrEqual(Comparison):
 
     def __init__(self):
         super().__init__()
 
     def evaluate(self, node_set_pos, node_set_neg):
 
-        # nodes where an attribute is equal to a given value
-        atr = None
-        val = None
-        if self.children[0].__class__.__name__ == 'AttributeName' and self.children[1].__class__.__name__ == 'NumberLiteral':
-            atr = self.children[0].value
-            val = self.children[1].value
-        if self.children[1].__class__.__name__ == 'AttributeName' and self.children[0].__class__.__name__ == 'NumberLiteral':
-            atr = self.children[1].value
-            val = self.children[0].value
+        super()._check_arguments()
 
-        pos = [x for x in node_set_pos if (atr in x.attrs and x.attrs[atr] < val)]
-        neg = [x for x in node_set_pos if (atr not in x.attrs or x.attrs[atr] >= val)]
-        return (pos, neg)
+        # literal arguments only
+        r = self.children[0]
+        l = self.children[1]
+        if l.__class__.__name__ != 'AttributeName' and l.__class__.__name__ != 'AttributeName':
+            if l.value >= r.value:
+                return (node_set_pos, node_set_neg)
+            else:
+                return ([], node_set_pos)
 
-class SmallerThanOrEqual(Predicate):
+        # both arguments are an attribute name
+        if l.__class__.__name__ == r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and r.value in x.attrs and x.attrs[l.value] >= x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
 
-    def __init__(self):
-        super().__init__()
+        # one of the arguments is an attribute name
+        if l.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and x.attrs[l.value] >= r.value)]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+        if r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (r.value in x.attrs and l.value >= x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
 
-    def evaluate(self, node_set_pos, node_set_neg):
 
-        # nodes where an attribute is equal to a given value
-        atr = None
-        val = None
-        if self.children[0].__class__.__name__ == 'AttributeName' and self.children[1].__class__.__name__ == 'NumberLiteral':
-            atr = self.children[0].value
-            val = self.children[1].value
-        if self.children[1].__class__.__name__ == 'AttributeName' and self.children[0].__class__.__name__ == 'NumberLiteral':
-            atr = self.children[1].value
-            val = self.children[0].value
-
-        pos = [x for x in node_set_pos if (atr in x.attrs and x.attrs[atr] <= val)]
-        neg = [x for x in node_set_pos if (atr not in x.attrs or x.attrs[atr] > val)]
-        return (pos, neg)
-
-class Equal(Predicate):
+class SmallerThan(Comparison):
 
     def __init__(self):
         super().__init__()
 
     def evaluate(self, node_set_pos, node_set_neg):
 
-        # nodes where an attribute is equal to a given value
-        atr = None
-        val = None
-        if self.children[0].__class__.__name__ == 'AttributeName' and self.children[1].__class__.__name__ == 'StringLiteral':
-            atr = self.children[0].value
-            val = self.children[1].value
-        if self.children[1].__class__.__name__ == 'AttributeName' and self.children[0].__class__.__name__ == 'StringLiteral':
-            atr = self.children[1].value
-            val = self.children[0].value
+        super()._check_arguments()
 
-        pos = [x for x in node_set_pos if (atr in x.attrs and x.attrs[atr] == val)]
-        neg = [x for x in node_set_pos if (atr not in x.attrs or x.attrs[atr] != val)]
-        return (pos, neg)
+        # literal arguments only
+        r = self.children[0]
+        l = self.children[1]
+        if l.__class__.__name__ != 'AttributeName' and l.__class__.__name__ != 'AttributeName':
+            if l.value < r.value:
+                return (node_set_pos, node_set_neg)
+            else:
+                return ([], node_set_pos)
 
-class NotEqual(Predicate):
+        # both arguments are an attribute name
+        if l.__class__.__name__ == r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and r.value in x.attrs and x.attrs[l.value] < x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+
+        # one of the arguments is an attribute name
+        if l.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and x.attrs[l.value] < r.value)]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+        if r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (r.value in x.attrs and l.value < x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+
+
+class SmallerThanOrEqual(Comparison):
 
     def __init__(self):
         super().__init__()
 
     def evaluate(self, node_set_pos, node_set_neg):
 
-        # nodes where an attribute is equal to a given value
-        atr = None
-        val = None
-        if self.children[0].__class__.__name__ == 'AttributeName' and self.children[1].__class__.__name__ == 'StringLiteral':
-            atr = self.children[0].value
-            val = self.children[1].value
-        if self.children[1].__class__.__name__ == 'AttributeName' and self.children[0].__class__.__name__ == 'StringLiteral':
-            atr = self.children[1].value
-            val = self.children[0].value
+        super()._check_arguments()
 
-        # TODO : what about @attr != '' (assuming attr attribute is missing)
-        pos = [x for x in node_set_pos if (atr in x.attrs and x.attrs[atr] != val)]
-        neg = [x for x in node_set_pos if (atr not in x.attrs or x.attrs[atr] == val)]
-        return (pos, neg)
+        # literal arguments only
+        r = self.children[0]
+        l = self.children[1]
+        if l.__class__.__name__ != 'AttributeName' and l.__class__.__name__ != 'AttributeName':
+            if l.value <= r.value:
+                return (node_set_pos, node_set_neg)
+            else:
+                return ([], node_set_pos)
+
+        # both arguments are an attribute name
+        if l.__class__.__name__ == r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and r.value in x.attrs and x.attrs[l.value] <= x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+
+        # one of the arguments is an attribute name
+        if l.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and x.attrs[l.value] <= r.value)]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+        if r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (r.value in x.attrs and l.value <= x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+
+
+class Equal(Comparison):
+
+    def __init__(self):
+        super().__init__()
+
+    def evaluate(self, node_set_pos, node_set_neg):
+
+        super()._check_arguments()
+
+        # literal arguments only
+        r = self.children[0]
+        l = self.children[1]
+        if l.__class__.__name__ != 'AttributeName' and l.__class__.__name__ != 'AttributeName':
+            if l.value == r.value:
+                return (node_set_pos, node_set_neg)
+            else:
+                return ([], node_set_pos)
+
+        # both arguments are an attribute name
+        if l.__class__.__name__ == r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and r.value in x.attrs and x.attrs[l.value] == x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+
+        # one of the arguments is an attribute name
+        if l.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and x.attrs[l.value] == r.value)]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+        if r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (r.value in x.attrs and l.value == x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+
+
+class NotEqual(Comparison):
+
+    def __init__(self):
+        super().__init__()
+
+    def evaluate(self, node_set_pos, node_set_neg):
+
+        super()._check_arguments()
+
+        # literal arguments only
+        r = self.children[0]
+        l = self.children[1]
+        if l.__class__.__name__ != 'AttributeName' and l.__class__.__name__ != 'AttributeName':
+            if l.value != r.value:
+                return (node_set_pos, node_set_neg)
+            else:
+                return ([], node_set_pos)
+
+        # both arguments are an attribute name
+        if l.__class__.__name__ == r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and r.value in x.attrs and x.attrs[l.value] != x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+
+        # one of the arguments is an attribute name
+        if l.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (l.value in x.attrs and x.attrs[l.value] != r.value)]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+        if r.__class__.__name__ == 'AttributeName':
+            pos = [x for x in node_set_pos if (r.value in x.attrs and l.value != x.attrs[r.value])]
+            neg = [x for x in node_set_pos if x not in pos]
+            return (pos, neg)
+
 
 class LogicalAnd(Predicate):
 

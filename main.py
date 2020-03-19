@@ -15,7 +15,7 @@ if __name__ == '__main__':
     doc = bs.BeautifulSoup(html_string, 'html.parser')
 
     # apply xpath
-    val = XPATH.xpath('//img/@src', doc)
+    val = XPATH.xpath("//img[@src > 'https://images.unsplash' and @src < 'https://j']/@src", doc)
 
     for x in val:
         print(x)
