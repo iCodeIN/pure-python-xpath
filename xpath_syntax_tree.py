@@ -152,6 +152,9 @@ class Predicate(Expression):
         super().__init__()
 
 class Comparison(Predicate):
+    """
+    This is a common base class for comparison operators in the XPATH language
+    """
 
     def __init__(self):
         super().__init__()
@@ -173,6 +176,9 @@ class Comparison(Predicate):
 
 
 class GreaterThan(Comparison):
+    """
+    This class implements the 'greater than' operator
+    """
 
     def __init__(self):
         super().__init__()
@@ -208,6 +214,9 @@ class GreaterThan(Comparison):
 
 
 class GreaterThanOrEqual(Comparison):
+    """
+    This class implements the 'greater than or equal' operator
+    """
 
     def __init__(self):
         super().__init__()
@@ -243,6 +252,9 @@ class GreaterThanOrEqual(Comparison):
 
 
 class SmallerThan(Comparison):
+    """
+    This class implements the 'smaller than' operator
+    """
 
     def __init__(self):
         super().__init__()
@@ -278,6 +290,9 @@ class SmallerThan(Comparison):
 
 
 class SmallerThanOrEqual(Comparison):
+    """
+    This class implements the 'smaller than or equal' operator
+    """
 
     def __init__(self):
         super().__init__()
@@ -313,6 +328,9 @@ class SmallerThanOrEqual(Comparison):
 
 
 class Equal(Comparison):
+    """
+    This class implements the equality operator
+    """
 
     def __init__(self):
         super().__init__()
@@ -348,6 +366,9 @@ class Equal(Comparison):
 
 
 class NotEqual(Comparison):
+    """
+    This class implements the inequality operator
+    """
 
     def __init__(self):
         super().__init__()
@@ -386,6 +407,9 @@ class NotEqual(Comparison):
 #
 
 class LogicalAnd(Predicate):
+    """
+    This class implements the 'AND' operator
+    """
 
     def __init__(self):
         super().__init__()
@@ -401,6 +425,9 @@ class LogicalAnd(Predicate):
         return (pos, neg)
 
 class LogicalOr(Predicate):
+    """
+    This class implements the 'OR' operator
+    """
 
     def __init__(self):
         super().__init__()
@@ -416,6 +443,9 @@ class LogicalOr(Predicate):
         return (pos, neg)
 
 class LogicalNot(Predicate):
+    """
+    This class implements the 'NOT' operator
+    """
 
     def __init__(self):
         super().__init__()
