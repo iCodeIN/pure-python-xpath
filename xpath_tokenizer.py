@@ -1,6 +1,9 @@
 import re
 
 class XPATHTokenizer:
+    """
+    This class implements a (greedy) tokenizer for XPATH expressions.
+    """
 
     def __init__(self):
         self.left_brackets = ['(','{','[']
@@ -30,6 +33,11 @@ class XPATHTokenizer:
                  'wbr']
 
     def _check_brackets(self, xpath_expression):
+        """
+        This function checks whether brackets match in an XPATH expression
+        :param xpath_expression:    the XPATH expression to be checked
+        :return:                    self
+        """
 
         # check bracket nesting
         stk = []
@@ -56,6 +64,11 @@ class XPATHTokenizer:
 
 
     def tokenize_expression(self, xpath_expression):
+        """
+        This function tokenizes an XPATH expression
+        :param xpath_expression:    the XPATH expression to be tokenized
+        :return:                    a list of strings representing the tokens
+        """
 
         # check brackets
         self._check_brackets(xpath_expression)

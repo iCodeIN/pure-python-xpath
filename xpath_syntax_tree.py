@@ -37,18 +37,27 @@ class Expression:
 #
 
 class AttributeName(Expression):
+    """
+    This class represents an attribute name. These begin with '@'
+    """
 
     def __init__(self, txt):
         super().__init__()
         self.value = txt[1:]
 
 class StringLiteral(Expression):
+    """
+    This class represents a string literal. These are encased by single quotation marks.
+    """
 
     def __init__(self, txt):
         super().__init__()
         self.value = txt[1:len(txt)-1]
 
 class NumberLiteral(Expression):
+    """
+    This class represents a number.
+    """
 
     def __init__(self, txt):
         super().__init__()
